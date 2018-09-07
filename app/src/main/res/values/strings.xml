@@ -9,4 +9,6 @@
     <string name="action_data_settings">Show data usage</string>
     <string name="action_start">Start</string>
     <string name="home">Home</string>
+    <string name="title_activity_temp_tabbed">TempTabbed</string>
+    <string name="section_format">Hello World from section: %1$d</string>
 </resources>
