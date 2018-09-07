@@ -29,7 +29,7 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         // Installed apps list
-        CardView cardView = view.findViewById(R.id.pager);
+        CardView cardView = view.findViewById(R.id.apps);
 
         return view;
     }

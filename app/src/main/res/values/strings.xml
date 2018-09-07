@@ -11,4 +11,6 @@
     <string name="home">Home</string>
     <string name="title_activity_temp_tabbed">TempTabbed</string>
     <string name="section_format">Hello World from section: %1$d</string>
+    <string name="card_app_image">App image</string>
+    <string name="card_app_name">App name</string>
 </resources>
