@@ -35,8 +35,8 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         if (savedInstanceState == null) { // Activity has been resumed, no need to recreate the view
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_home);
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment()).commit();
         } else {
             Toast.makeText(this, "ACTIVITY HAS BEEN RESUMED", Toast.LENGTH_SHORT).show();
         }

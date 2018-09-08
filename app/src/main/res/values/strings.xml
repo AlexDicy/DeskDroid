@@ -13,4 +13,7 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="card_app_image">App image</string>
     <string name="card_app_name">App name</string>
+
+    <string name="intellij">IntelliJ</string>
+    <string name="your_apps">Your apps</string>
 </resources>
