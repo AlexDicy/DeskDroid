@@ -16,4 +16,10 @@
 
     <string name="intellij">IntelliJ</string>
     <string name="your_apps">Your apps</string>
+    <string name="apps_position">apps_position</string>
+    <string name="notepad">Notepad</string>
+    <string name="notepadpp">Notepad++</string>
+    <string name="firefox">Firefox</string>
+    <string name="apps_info">apps_info</string>
+    <string name="last_app_name">last_app_name</string>
 </resources>

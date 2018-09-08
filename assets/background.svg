@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg width="800" height="800" version="1.1" viewBox="0 0 211.66666 211.66667" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <radialGradient id="radialGradient4959" cx="261.92" cy="-119.94" r="107.98" gradientTransform="matrix(.98015 0 0 .98015 -150.89 308.73)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#2a7fff" offset="0"/>
+   <stop stop-color="#2a68ff" offset="1"/>
+  </radialGradient>
+ </defs>
+ <metadata>
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <g transform="translate(0 -85.333)">
+  <rect x="-1.7378e-6" y="85.333" width="211.67" height="211.67" ry="105.83" fill="url(#radialGradient4959)" fill-rule="evenodd"/>
+ </g>
+</svg>

@@ -1,6 +1,7 @@
 package us.halex.deskdroid;
 
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +29,10 @@ import java.util.List;
 public class HomeFragment extends Fragment {
     private Menu menu;
     private RecyclerView appsView;
+    private AppsAdapter appsAdapter;
     private LinearLayoutManager layoutManager;
     private CardView currentApp;
     private int selectedApp = -1;
-    private static int changes = 0;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,16 +46,38 @@ public class HomeFragment extends Fragment {
         outState.putInt("apps_position", selectedApp);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        Context context = getContext();
+        App app = appsAdapter.getAppByPosition(selectedApp);
+        if (context != null) {
+            String name = app != null ? app.getName() : null;
+            context.getSharedPreferences(getString(R.string.apps_info), Context.MODE_PRIVATE)
+                    .edit()
+                    .putString(getString(R.string.last_app_name), name)
+                    .apply();
+
+            /*Notification notification = new NotificationCompat.Builder(context, "default")
+                    .setSmallIcon(R.drawable.ic_firefox_logo)
+                    .setContentTitle("Settings saved!")
+                    .setContentText("Last app name set to: " + name)
+                    .build();
+            NotificationManagerCompat.from(context).notify(0, notification);*/
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         // Installed apps list
-        appsView = view.findViewById(R.id.apps);
         layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        appsAdapter = new AppsAdapter();
+        appsView = view.findViewById(R.id.apps);
         appsView.setLayoutManager(layoutManager);
-        appsView.setAdapter(new AppsAdapter());
+        appsView.setAdapter(appsAdapter);
 
         SnapHelper snapHelper = new LinearSnapHelper() {
             @Override
@@ -73,17 +95,18 @@ public class HomeFragment extends Fragment {
         };
         snapHelper.attachToRecyclerView(appsView);
 
-        if (savedInstanceState != null && savedInstanceState.containsKey("apps_position")) {
-            int pos = savedInstanceState.getInt("apps_position");
+        if (savedInstanceState != null && savedInstanceState.containsKey(getString(R.string.apps_position))) {
+            int pos = savedInstanceState.getInt(getString(R.string.apps_position));
             if (pos > -1) {
                 appsView.smoothScrollToPosition(pos);
                 selectedApp = pos;
             }
         } else {
-            //
-            // Select last used app...
-            appsView.smoothScrollToPosition(2);
-            // ^^^
+            Context context = getContext();
+            if (context != null) {
+                String lastUsedApp = context.getSharedPreferences(getString(R.string.apps_info), Context.MODE_PRIVATE).getString(getString(R.string.last_app_name), null);
+                appsAdapter.scrollToAppName(lastUsedApp);
+            }
         }
 
         return view;
@@ -130,13 +153,12 @@ public class HomeFragment extends Fragment {
         ObjectAnimator.ofFloat(card, "elevation", elevationSelected).start();
 
         setMenuText();
-        Toast.makeText(getContext(), "App changes: " + ++changes, Toast.LENGTH_SHORT).show();
     }
 
     private void setMenuText() {
         if (menu != null && currentApp != null) {
             TextView text = currentApp.findViewById(R.id.app_name);
-            menu.findItem(R.id.action_control).setTitle(":" + text.getText()).setVisible(true);
+            menu.findItem(R.id.action_control).setTitle(text.getText()).setVisible(true);
         }
     }
 
@@ -146,26 +168,28 @@ public class HomeFragment extends Fragment {
 
         private AppsAdapter() {
             apps.add(new App(getContext(), R.string.intellij, R.drawable.ic_intellij_logo, R.drawable.ic_intellij_logo_text));
-            apps.add(new App(getContext(), R.string.intellij, R.drawable.ic_intellij_logo, R.drawable.ic_intellij_logo_text));
-            apps.add(new App(getContext(), R.string.intellij, R.drawable.ic_intellij_logo, R.drawable.ic_intellij_logo_text));
-            apps.add(new App(getContext(), R.string.intellij, R.drawable.ic_intellij_logo, R.drawable.ic_intellij_logo_text));
-            apps.add(new App(getContext(), R.string.intellij, R.drawable.ic_intellij_logo, R.drawable.ic_intellij_logo_text));
-            apps.add(new App(getContext(), R.string.intellij, R.drawable.ic_intellij_logo, R.drawable.ic_intellij_logo_text));
-            apps.add(new App(getContext(), R.string.intellij, R.drawable.ic_intellij_logo, R.drawable.ic_intellij_logo_text));
-            apps.add(new App(getContext(), R.string.intellij, R.drawable.ic_intellij_logo, R.drawable.ic_intellij_logo_text));
-            apps.add(new App(getContext(), R.string.intellij, R.drawable.ic_intellij_logo, R.drawable.ic_intellij_logo_text));
-            apps.add(new App(getContext(), R.string.intellij, R.drawable.ic_intellij_logo, R.drawable.ic_intellij_logo_text));
+            apps.add(new App(getContext(), R.string.notepad, R.drawable.ic_notepad_logo, R.drawable.ic_intellij_logo_text));
+            apps.add(new App(getContext(), R.string.notepadpp, R.drawable.ic_notepadpp_logo, R.drawable.ic_intellij_logo_text));
+            apps.add(new App(getContext(), R.string.firefox, R.drawable.ic_firefox_logo, R.drawable.ic_intellij_logo_text));
         }
 
-        public class AppViewHolder extends RecyclerView.ViewHolder {
-            TextView name;
-            ImageView image;
+        private App getAppByPosition(int pos) {
+            return apps.size() > pos && pos > -1 ? apps.get(pos) : null;
+        }
 
-            AppViewHolder(View itemView) {
-                super(itemView);
-                name = itemView.findViewById(R.id.app_name);
-                image = itemView.findViewById(R.id.app_image);
+        private void scrollToAppName(@Nullable String name) {
+            for (int i = 0; i < apps.size(); i++) {
+                if (apps.get(i).getName().equalsIgnoreCase(name)) {
+                    scrollTo(i);
+                    return;
+                }
             }
+            scrollTo(0);
+        }
+
+        private void scrollTo(int pos) {
+            appsView.smoothScrollToPosition(pos);
+            selectedApp = pos;
         }
 
         @Override
@@ -191,10 +215,21 @@ public class HomeFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull AppViewHolder holder, int i) {
             App app = apps.get(i);
-            holder.name.setText(app.getName() + i);
+            holder.name.setText(app.getName());
             holder.image.setImageDrawable(app.getLogo());
             if (selectedApp == i) {
                 selectApp(i, (CardView) holder.itemView);
+            }
+        }
+
+        public class AppViewHolder extends RecyclerView.ViewHolder {
+            TextView name;
+            ImageView image;
+
+            AppViewHolder(View itemView) {
+                super(itemView);
+                name = itemView.findViewById(R.id.app_name);
+                image = itemView.findViewById(R.id.app_image);
             }
         }
     }
