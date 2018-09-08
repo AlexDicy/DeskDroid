@@ -30,8 +30,9 @@ public class HomeFragment extends Fragment {
     private Menu menu;
     private RecyclerView appsView;
     private LinearLayoutManager layoutManager;
-    private CardView previousApp;
+    private CardView currentApp;
     private int selectedApp = -1;
+    private static int changes = 0;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,11 +40,16 @@ public class HomeFragment extends Fragment {
         setHasOptionsMenu(true);
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("apps_position", selectedApp);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        Toast.makeText(getContext(), "onCreateView()", Toast.LENGTH_SHORT).show();
 
         // Installed apps list
         appsView = view.findViewById(R.id.apps);
@@ -67,11 +73,18 @@ public class HomeFragment extends Fragment {
         };
         snapHelper.attachToRecyclerView(appsView);
 
-
-        //
-        // Select last used app...
-        appsView.smoothScrollToPosition(2);
-        // ^^^
+        if (savedInstanceState != null && savedInstanceState.containsKey("apps_position")) {
+            int pos = savedInstanceState.getInt("apps_position");
+            if (pos > -1) {
+                appsView.smoothScrollToPosition(pos);
+                selectedApp = pos;
+            }
+        } else {
+            //
+            // Select last used app...
+            appsView.smoothScrollToPosition(2);
+            // ^^^
+        }
 
         return view;
     }
@@ -80,6 +93,7 @@ public class HomeFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.main, menu);
         this.menu = menu;
+        setMenuText();
     }
 
     @Override
@@ -98,31 +112,33 @@ public class HomeFragment extends Fragment {
     }
 
     private void onAppSelected(int position, View view) {
-        // Ignore duplicate
-        if (view.equals(previousApp) || position == selectedApp) return;
+        if (!view.equals(currentApp) && position != selectedApp) {
+            selectApp(position, (CardView) view);
+        }
+    }
 
-        CardView card = (CardView) view;
-        TextView text = card.findViewById(R.id.app_name);
+    private void selectApp(int position, CardView card) {
+        CardView oldCard = currentApp;
+        currentApp = card;
+        selectedApp = position;
         float elevationSelected = getResources().getDimension(R.dimen.elevation_selected);
         float elevationNormal = getResources().getDimension(R.dimen.elevation_normal);
 
-        //card.setElevation(10);
-        ObjectAnimator.ofFloat(card, "elevation", elevationSelected).start();
-        if (previousApp != null) {
-            ObjectAnimator.ofFloat(previousApp, "elevation", elevationNormal).start();
+        if (oldCard != null) {
+            ObjectAnimator.ofFloat(oldCard, "elevation", elevationNormal).start();
         }
+        ObjectAnimator.ofFloat(card, "elevation", elevationSelected).start();
 
-        menu.findItem(R.id.action_control).setTitle(":" + text.getText()).setVisible(true);
-        previousApp = card;
+        setMenuText();
+        Toast.makeText(getContext(), "App changes: " + ++changes, Toast.LENGTH_SHORT).show();
     }
 
-
-
-
-
-
-
-
+    private void setMenuText() {
+        if (menu != null && currentApp != null) {
+            TextView text = currentApp.findViewById(R.id.app_name);
+            menu.findItem(R.id.action_control).setTitle(":" + text.getText()).setVisible(true);
+        }
+    }
 
 
     private class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.AppViewHolder> {
@@ -163,12 +179,10 @@ public class HomeFragment extends Fragment {
             View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_app, viewGroup, false);
             v.setElevation(4);
             v.setOnClickListener(view -> {
-                Toast.makeText(getContext(), "You've clicked on: " + ((TextView) view.findViewById(R.id.app_name)).getText(), Toast.LENGTH_SHORT).show();
                 int position = layoutManager.getPosition(v);
-                if (previousApp != view) {
-                    Toast.makeText(getContext(), "Not the selected item, changing...", Toast.LENGTH_SHORT).show();
+                if (currentApp != view) {
                     appsView.smoothScrollToPosition(position);
-                    onAppSelected(position, view);
+                    selectApp(position, (CardView) view);
                 }
             });
             return new AppViewHolder(v);
@@ -177,8 +191,11 @@ public class HomeFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull AppViewHolder holder, int i) {
             App app = apps.get(i);
-            holder.name.setText(app.getName());
+            holder.name.setText(app.getName() + i);
             holder.image.setImageDrawable(app.getLogo());
+            if (selectedApp == i) {
+                selectApp(i, (CardView) holder.itemView);
+            }
         }
     }
 }

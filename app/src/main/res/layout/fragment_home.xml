@@ -35,7 +35,4 @@
         tools:listitem="@layout/card_app" />
 
 
-
-
-
 </android.support.constraint.ConstraintLayout>

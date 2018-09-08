@@ -9,7 +9,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -34,7 +33,7 @@ public class MainActivity extends AppCompatActivity
             navigationView.setCheckedItem(R.id.nav_home);
             getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment()).commit();
         } else {
-            Toast.makeText(this, "ACTIVITY HAS BEEN RESUMED", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "ACTIVITY HAS BEEN RESUMED", Toast.LENGTH_SHORT).show();
         }
     }
 
