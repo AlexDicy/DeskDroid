@@ -1,5 +1,6 @@
 package us.halex.deskdroid;
 
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,9 @@ import java.util.List;
  */
 public class HomeFragment extends Fragment {
     private Menu menu;
+    private RecyclerView appsView;
+    private LinearLayoutManager layoutManager;
+    private CardView previousApp;
     private int selectedApp = -1;
 
     @Override
@@ -38,10 +43,11 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+        Toast.makeText(getContext(), "onCreateView()", Toast.LENGTH_SHORT).show();
 
         // Installed apps list
-        RecyclerView appsView = view.findViewById(R.id.apps);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        appsView = view.findViewById(R.id.apps);
+        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         appsView.setLayoutManager(layoutManager);
         appsView.setAdapter(new AppsAdapter());
 
@@ -92,9 +98,22 @@ public class HomeFragment extends Fragment {
     }
 
     private void onAppSelected(int position, View view) {
+        // Ignore duplicate
+        if (view.equals(previousApp) || position == selectedApp) return;
+
         CardView card = (CardView) view;
         TextView text = card.findViewById(R.id.app_name);
-        menu.findItem(R.id.action_control).setTitle(":" + text.getText());
+        float elevationSelected = getResources().getDimension(R.dimen.elevation_selected);
+        float elevationNormal = getResources().getDimension(R.dimen.elevation_normal);
+
+        //card.setElevation(10);
+        ObjectAnimator.ofFloat(card, "elevation", elevationSelected).start();
+        if (previousApp != null) {
+            ObjectAnimator.ofFloat(previousApp, "elevation", elevationNormal).start();
+        }
+
+        menu.findItem(R.id.action_control).setTitle(":" + text.getText()).setVisible(true);
+        previousApp = card;
     }
 
 
@@ -142,6 +161,16 @@ public class HomeFragment extends Fragment {
         @Override
         public AppViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
             View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_app, viewGroup, false);
+            v.setElevation(4);
+            v.setOnClickListener(view -> {
+                Toast.makeText(getContext(), "You've clicked on: " + ((TextView) view.findViewById(R.id.app_name)).getText(), Toast.LENGTH_SHORT).show();
+                int position = layoutManager.getPosition(v);
+                if (previousApp != view) {
+                    Toast.makeText(getContext(), "Not the selected item, changing...", Toast.LENGTH_SHORT).show();
+                    appsView.smoothScrollToPosition(position);
+                    onAppSelected(position, view);
+                }
+            });
             return new AppViewHolder(v);
         }
 

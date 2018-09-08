@@ -6,6 +6,7 @@
         android:id="@+id/action_control"
         android:orderInCategory="1"
         android:title="@string/action_start"
+        android:visible="false"
         app:showAsAction="ifRoom" />
 
     <item
