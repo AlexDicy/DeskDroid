@@ -1,5 +1,6 @@
 package org.x.android;
 
+@SuppressWarnings("JniMissingFunction") // Those methods exist and work.
 public class XServerNative {
     public static native void buttonEvent(int i, boolean z, int i2);
 

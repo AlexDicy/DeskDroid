@@ -8,6 +8,7 @@
     <string name="action_settings">Settings</string>
     <string name="action_data_settings">Show data usage</string>
     <string name="action_start">Start</string>
+    <string name="action_stop">Stop</string>
     <string name="home">Home</string>
     <string name="title_activity_temp_tabbed">TempTabbed</string>
     <string name="section_format">Hello World from section: %1$d</string>
@@ -22,4 +23,5 @@
     <string name="firefox">Firefox</string>
     <string name="apps_info">apps_info</string>
     <string name="last_app_name">last_app_name</string>
+    <string name="there_was_error">There was an error</string>
 </resources>

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,8 +119,22 @@ public class HomeFragment extends Fragment {
         inflater.inflate(R.menu.main, menu);
         this.menu = menu;
         menu.findItem(R.id.action_control).setOnMenuItemClickListener(item -> {
-
-            return true;
+            if (currentApp != null && selectedApp > -1) {
+                App app = appsAdapter.getAppByPosition(selectedApp);
+                if (app != null) {
+                    DeskDroidApp.openApp(getActivity(), app);
+                    return true;
+                }
+            }
+            Toast.makeText(getContext(), "Please, report error X4 to support@halex.us", Toast.LENGTH_LONG).show();
+            if (getContext() != null) {
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Error")
+                        .setMessage("Please, report error X4 to support@halex.me")
+                        .create()
+                        .show();
+            }
+            return false;
         });
         setMenuText();
     }
@@ -130,12 +146,12 @@ public class HomeFragment extends Fragment {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+        //noinspection RedundantIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
 
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
     private void onAppSelected(int position, View view) {
@@ -161,8 +177,14 @@ public class HomeFragment extends Fragment {
 
     private void setMenuText() {
         if (menu != null && currentApp != null) {
-            TextView text = currentApp.findViewById(R.id.app_name);
-            menu.findItem(R.id.action_control).setTitle(text.getText()).setVisible(true);
+            MenuItem action = menu.findItem(R.id.action_control);
+            App app = appsAdapter.getAppByPosition(selectedApp);
+            if (app != null){
+                boolean running = DeskDroidApp.isRunning(app);
+                action.setTitle(running ? R.string.action_start : R.string.action_stop).setVisible(true);
+            } else {
+                action.setTitle(R.string.there_was_error).setVisible(true);
+            }
         }
     }
 

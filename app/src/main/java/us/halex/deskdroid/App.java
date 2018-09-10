@@ -11,8 +11,7 @@ import android.support.annotation.StringRes;
  * Created by HAlexTM on 08/09/2018 09:58
  */
 public class App {
-
-    private String name;
+    private String name; // Should be unique because it's used as key
     private Drawable logo;
     private Drawable textLogo;
 
