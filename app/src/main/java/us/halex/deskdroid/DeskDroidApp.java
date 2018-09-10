@@ -79,6 +79,8 @@ public class DeskDroidApp extends Application {
         height += height % 2;
         int size = Math.max(width, height);
 
+        // Extract Core, Fluxbox, Java...
+
         new Executor.Builder()
                 .setExecutable("Xvfb")
                 .setArguments(new String[]{
