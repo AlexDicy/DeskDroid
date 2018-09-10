@@ -116,6 +116,10 @@ public class HomeFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.main, menu);
         this.menu = menu;
+        menu.findItem(R.id.action_control).setOnMenuItemClickListener(item -> {
+
+            return true;
+        });
         setMenuText();
     }
 
