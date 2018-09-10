@@ -7,7 +7,6 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="1024"
@@ -22,18 +21,6 @@
    inkscape:export-ydpi="96">
   <defs
      id="defs2">
-    <linearGradient
-       inkscape:collect="always"
-       id="linearGradient4542">
-      <stop
-         style="stop-color:#2a7fff;stop-opacity:1"
-         offset="0"
-         id="stop4538" />
-      <stop
-         style="stop-color:#2a68ff;stop-opacity:1"
-         offset="1"
-         id="stop4540" />
-    </linearGradient>
     <filter
        style="color-interpolation-filters:sRGB"
        inkscape:label="Drop Shadow"
@@ -226,17 +213,6 @@
          result="composite2"
          id="feComposite4955" />
     </filter>
-    <radialGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient4542"
-       id="radialGradient4959"
-       gradientUnits="userSpaceOnUse"
-       cx="261.92413"
-       cy="-119.94049"
-       fx="261.92413"
-       fy="-119.94049"
-       r="107.97688"
-       gradientTransform="translate(97.286107,297.20371)" />
     <filter
        style="color-interpolation-filters:sRGB;"
        inkscape:label="Drop Shadow"
@@ -301,6 +277,52 @@
          result="composite2"
          id="feComposite4645" />
     </filter>
+    <filter
+       color-interpolation-filters="sRGB"
+       id="filter4933-6">
+      <feFlood
+         id="feFlood4544"
+         result="flood"
+         flood-opacity=".49804"
+         flood-color="rgb(0,0,0)" />
+      <feComposite
+         id="feComposite4546"
+         result="composite1"
+         operator="in"
+         in2="SourceGraphic"
+         in="flood" />
+      <feGaussianBlur
+         id="feGaussianBlur4548"
+         stdDeviation="5.6"
+         result="blur"
+         in="composite1" />
+      <feOffset
+         id="feOffset4550"
+         result="offset"
+         dy="0"
+         dx="0" />
+      <feComposite
+         id="feComposite4552"
+         result="composite2"
+         in2="offset"
+         in="SourceGraphic" />
+    </filter>
+    <radialGradient
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(486.77,295.66)"
+       r="107.98"
+       cy="-119.94"
+       cx="261.92"
+       id="radialGradient4590">
+      <stop
+         id="stop4555"
+         offset="0"
+         stop-color="#2a7fff" />
+      <stop
+         id="stop4557"
+         offset="1"
+         stop-color="#2a68ff" />
+    </radialGradient>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -310,7 +332,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.98994949"
-     inkscape:cx="532.22149"
+     inkscape:cx="368.0717"
      inkscape:cy="204.57407"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -324,7 +346,9 @@
      inkscape:window-maximized="1"
      inkscape:measure-start="0,0"
      inkscape:measure-end="0,0"
-     inkscape:snap-page="true" />
+     inkscape:snap-page="true"
+     inkscape:snap-object-midpoints="true"
+     inkscape:snap-center="true" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -333,7 +357,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -366,21 +390,29 @@
        style="fill:#92a6aa;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.73745281;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter4591)"
        transform="matrix(0.94343146,0,0,0.94343146,7.6631509,13.059082)" />
     <g
-       id="g4963"
-       transform="matrix(0.34153417,0,0,0.34153417,-39.289067,175.52648)">
-      <rect
-         style="fill:url(#radialGradient4959);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.52916664;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         id="rect4773"
-         width="215.95377"
-         height="215.95377"
-         x="251.23334"
-         y="69.286339"
-         ry="107.97688" />
-      <path
-         inkscape:connector-curvature="0"
-         style="font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;font-size:192px;line-height:1.25;font-family:Nunito;-inkscape-font-specification:'Nunito Heavy';letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.9035542;filter:url(#filter4933)"
-         d="m 321.47807,118.8026 c -4.74184,0 -8.38497,1.27232 -10.92938,3.81673 -2.5444,2.5444 -3.81673,6.18752 -3.81673,10.92938 v 92.81307 c 0,3.42313 0.66359,6.27324 1.98957,8.5512 h 80.53011 c 0.7826,-0.34969 1.55462,-0.71216 2.31324,-1.09146 9.83066,-4.85751 17.29037,-11.85489 22.37919,-20.99164 5.20447,-9.25239 7.80681,-20.23945 7.80681,-32.9615 0,-12.60639 -2.60234,-23.47805 -7.80681,-32.61479 -5.20447,-9.13674 -12.72187,-16.13375 -22.55255,-20.99126 -9.71501,-4.97316 -21.33823,-7.45973 -34.86986,-7.45973 z m 17.17491,25.67549 h 15.61324 c 11.91245,0 20.81795,2.89119 26.71635,8.67394 6.01406,5.78275 9.02102,14.68824 9.02102,26.71635 0,12.02812 -3.00696,20.9913 -9.02102,26.88971 -5.8984,5.78275 -14.8039,8.67431 -26.71635,8.67431 h -15.61324 z"
-         id="path4532" />
+       id="g4572"
+       transform="matrix(0.35109722,0,0,0.35109722,46.238721,168.95048)">
+      <g
+         id="g4570"
+         transform="matrix(0.98015,0,0,0.98015,-246.25,17.422)">
+        <g
+           id="g4568"
+           transform="translate(-389.49,1.5425)">
+          <rect
+             id="rect4564"
+             ry="107.98"
+             height="215.95"
+             width="215.95"
+             y="67.744003"
+             x="640.71997"
+             style="fill:url(#radialGradient4590);fill-rule:evenodd" />
+          <path
+             id="path4566"
+             d="m 704.31,233.37 h 74.429 c 0.7826,-0.34969 1.5546,-0.71216 2.3132,-1.0915 9.8307,-4.8575 17.29,-11.855 22.379,-20.992 5.2045,-9.2524 7.8068,-20.239 7.8068,-32.962 0,-12.606 -2.6023,-23.478 -7.8068,-32.615 -5.2045,-9.137 -12.722,-16.134 -22.553,-20.991 -9.715,-4.9732 -21.338,-7.4597 -34.87,-7.4597 h -35.043 c -4.7418,0 -8.385,1.2723 -10.929,3.8167 -2.5444,2.5444 -3.8163,6.1875 -3.8167,10.929 l -0.008,93.266 c 0,5.3995 2.7,8.0983 8.0983,8.0983 z m 23.831,-90.435 h 15.613 c 11.912,0 20.818,2.8912 26.716,8.6739 6.0141,5.7828 9.021,14.688 9.021,26.716 0,12.028 -3.007,20.991 -9.021,26.89 -5.8984,5.7828 -14.804,8.6743 -26.716,8.6743 h -15.613 z"
+             inkscape:connector-curvature="0"
+             style="fill:#ffffff;filter:url(#filter4933-6)" />
+        </g>
+      </g>
     </g>
     <flowRoot
        xml:space="preserve"
