@@ -48,6 +48,11 @@ public class DeskDroidApp extends Application {
 
         // Must use app dir, external folder is not executable, learnt the hard way
         appFolder = getFilesDir();
+        if (true) {
+            //deleteFiles(appFolder);
+            System.out.println(">>> --- >>> Files: " + Arrays.toString(appFolder.list()));
+            //return;
+        }
         cacheFolder = getCacheDir();
 
         home = new File(appFolder, "home");
@@ -74,12 +79,18 @@ public class DeskDroidApp extends Application {
             Toast.makeText(this, "Extracting core files...", Toast.LENGTH_LONG).show();
             // Extract zip file and start activity
             File temp = new File(appFolder, "temp");
-            if (Extractor.extractZip(this, R.raw.lib_with_fluxbox, temp)) {
+            if (Extractor.extractTar(this, R.raw.lib_with_fluxbox_tar_gz, temp)) {
                 Arrays.stream(temp.listFiles()).sorted().forEach((file) -> {
                     if (file.getName().endsWith(".tar.gz")) {
-                        Extractor.extractTar(file, appFolder);
+                        if (!Extractor.extractTar(file, appFolder)) {
+                            Toast.makeText(instance, "Error extracting file " + file.getName(), Toast.LENGTH_LONG).show();
+                        }
                     }
+                    //noinspection ResultOfMethodCallIgnored
+                    file.delete();
                 });
+                //noinspection ResultOfMethodCallIgnored
+                temp.delete();
                 new Executor.Builder()
                         .setExecutable("fc-list")
                         .addEnv("FONTCONFIG_PATH", new File(appFolder, "etc/fonts").getAbsolutePath())
@@ -134,6 +145,17 @@ public class DeskDroidApp extends Application {
                 .addEnv("PROTOCOL_TXT", new File(appFolder, "lib/xorg/protocol.txt").getAbsolutePath())
                 .create()
                 .execute();
+    }
+
+    public static void deleteFiles(File fileOrDirectory) {
+        if (fileOrDirectory.isDirectory())
+            for (File child : fileOrDirectory.listFiles())
+                deleteFiles(child);
+
+        if (!fileOrDirectory.delete()) {
+            System.out.println("File not deleted: " + fileOrDirectory.getAbsolutePath());
+        }
+        //instance.deleteFile(fileOrDirectory.getAbsolutePath());
     }
 
     public static boolean isRunning(App app) {

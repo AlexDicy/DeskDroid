@@ -4,6 +4,12 @@ import android.content.Context;
 import android.support.annotation.RawRes;
 import android.util.Log;
 
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.compress.utils.IOUtils;
+import org.x.android.XServerNative;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -69,6 +75,51 @@ public class Extractor {
         return extractZip(new ZipInputStream(inputStream), destination);
     }
 
-    public static void extractTar(File file, File appFolder) {
+    public static boolean extractTar(Context context, @RawRes int rawResource, File destination) {
+        InputStream inputStream = context.getResources().openRawResource(rawResource);
+        return extractTar(inputStream, destination);
+    }
+
+    public static boolean extractTar(File from, File to) {
+        try {
+            return extractTar(new FileInputStream(from), to);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean extractTar(InputStream inputStream, File to) {
+        /*try {
+            System.out.println("______________DETECTED______________");
+            System.out.println(ArchiveStreamFactory.detect(inputStream));
+            return false;
+        } catch (ArchiveException e) {
+            e.printStackTrace();
+        }*/
+        Log.v("Extractor", "Extracting to " + to.getAbsolutePath());
+        try (TarArchiveInputStream is = new TarArchiveInputStream(new GzipCompressorInputStream(inputStream))) {
+            TarArchiveEntry entry;
+            while ((entry = is.getNextTarEntry()) != null) {
+                if (entry.isDirectory()) {
+                    continue;
+                }
+                File file = new File(to, entry.getName());
+                File parent = file.getParentFile();
+                //noinspection ResultOfMethodCallIgnored
+                parent.mkdirs();
+                if (entry.isSymbolicLink()) {
+                    XServerNative.symlink(entry.getLinkName(), file.getAbsolutePath());
+                } else {
+                    IOUtils.copy(is, new FileOutputStream(file));
+                    XServerNative.chmod(file.getAbsolutePath(), entry.getMode());
+                }
+            }
+            Log.v("Extractor", "Done extracted to " + to.getAbsolutePath());
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
