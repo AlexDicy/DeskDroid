@@ -4,6 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <us.halex.deskdroid.XView
+        android:id="@+id/xview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <LinearLayout
         style="?android:attr/buttonBarStyle"
         android:layout_width="fill_parent"

@@ -179,9 +179,9 @@ public class HomeFragment extends Fragment {
         if (menu != null && currentApp != null) {
             MenuItem action = menu.findItem(R.id.action_control);
             App app = appsAdapter.getAppByPosition(selectedApp);
-            if (app != null){
+            if (app != null) {
                 boolean running = DeskDroidApp.isRunning(app);
-                action.setTitle(running ? R.string.action_start : R.string.action_stop).setVisible(true);
+                action.setTitle(running ? R.string.action_stop : R.string.action_start).setVisible(true);
             } else {
                 action.setTitle(R.string.there_was_error).setVisible(true);
             }
@@ -193,10 +193,10 @@ public class HomeFragment extends Fragment {
         List<App> apps = new ArrayList<>();
 
         private AppsAdapter() {
-            apps.add(new App(getContext(), R.string.intellij, R.drawable.ic_intellij_logo, R.drawable.ic_intellij_logo_text));
-            apps.add(new App(getContext(), R.string.notepad, R.drawable.ic_notepad_logo, R.drawable.ic_intellij_logo_text));
-            apps.add(new App(getContext(), R.string.notepadpp, R.drawable.ic_notepadpp_logo, R.drawable.ic_intellij_logo_text));
-            apps.add(new App(getContext(), R.string.firefox, R.drawable.ic_firefox_logo, R.drawable.ic_intellij_logo_text));
+            apps.add(new App(getString(R.string.intellij), getResources().getDrawable(R.drawable.ic_intellij_logo, null), getResources().getDrawable(R.drawable.ic_intellij_logo_text, null)));
+            apps.add(new App(getString(R.string.notepad), getResources().getDrawable(R.drawable.ic_notepad_logo, null), getResources().getDrawable(R.drawable.ic_intellij_logo_text, null)));
+            apps.add(new App(getString(R.string.notepadpp), getResources().getDrawable(R.drawable.ic_notepadpp_logo, null), getResources().getDrawable(R.drawable.ic_intellij_logo_text, null)));
+            apps.add(new App(getString(R.string.firefox), getResources().getDrawable(R.drawable.ic_firefox_logo, null), getResources().getDrawable(R.drawable.ic_intellij_logo_text, null)));
         }
 
         private App getAppByPosition(int pos) {
@@ -248,7 +248,7 @@ public class HomeFragment extends Fragment {
             }
         }
 
-        public class AppViewHolder extends RecyclerView.ViewHolder {
+        class AppViewHolder extends RecyclerView.ViewHolder {
             TextView name;
             ImageView image;
 

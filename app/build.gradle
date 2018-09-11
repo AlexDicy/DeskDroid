@@ -37,6 +37,9 @@ dependencies {
     //noinspection GradleDependency
     implementation 'com.android.support:recyclerview-v7:28.0.0-alpha1'
 
+    // Non-Android libraries
+    implementation 'org.apache.commons:commons-compress:1.17'
+
     // Testing
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

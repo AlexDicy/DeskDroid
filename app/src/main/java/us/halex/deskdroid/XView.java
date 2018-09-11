@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
+import android.widget.Toast;
 
 import org.x.android.KeyCode;
 import org.x.android.KeyCodeMap;
@@ -52,6 +54,20 @@ public class XView extends View implements GestureDetector.OnGestureListener {
         init();
     }
 
+    public XView(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public XView(Context context, AttributeSet attrs, int defStyleAttr) {
+        this(context, attrs, defStyleAttr, 0);
+    }
+
+    public XView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        gestureDetector = new GestureDetector(context, this);
+        init();
+    }
+
     private void init() {
         setWillNotDraw(false);
         setFocusableInTouchMode(true);
@@ -63,8 +79,10 @@ public class XView extends View implements GestureDetector.OnGestureListener {
             File localFile = new File(getContext().getCacheDir(), "Xvfb_screen0");
             RandomAccessFile accessFile = new RandomAccessFile(localFile, "r");
             buffer = accessFile.getChannel().map(FileChannel.MapMode.READ_ONLY, 928L, this.bitmap.getByteCount());
-        } catch (IOException localIOException) {
-            throw new Error(localIOException);
+        } catch (IOException e) {
+            setWillNotDraw(true);
+            Toast.makeText(getContext(), "Couldn't load screen buffer, error:\n\n" + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
         }
     }
 
@@ -127,14 +145,14 @@ public class XView extends View implements GestureDetector.OnGestureListener {
     protected void onDraw(Canvas paramCanvas) {
         super.onDraw(paramCanvas);
         long l = System.currentTimeMillis();
-        this.buffer.position(0);
-        this.bitmap.copyPixelsFromBuffer(this.buffer);
-        paramCanvas.drawBitmap(this.bitmap, this.matrix, this.paint);
+        buffer.position(0);
+        bitmap.copyPixelsFromBuffer(buffer);
+        paramCanvas.drawBitmap(bitmap, matrix, paint);
         postInvalidateDelayed(Math.max(REFRESH_DURATION, (System.currentTimeMillis() - l) * 2L));
     }
 
     @Override
-    public boolean onFling(MotionEvent paramMotionEvent1, MotionEvent paramMotionEvent2, float paramFloat1, float paramFloat2) {
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         return false;
     }
 

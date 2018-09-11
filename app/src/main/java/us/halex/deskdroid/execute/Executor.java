@@ -27,6 +27,7 @@ public abstract class Executor {
     private Process process;
 
     private Executor() {
+        arguments = new String[0];
     }
 
     public Executor(String executable, String arguments) {
@@ -116,6 +117,10 @@ public abstract class Executor {
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public Process getProcess() {
+        return process;
     }
 
     public abstract void run();
