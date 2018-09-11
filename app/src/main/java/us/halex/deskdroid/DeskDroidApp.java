@@ -30,6 +30,10 @@ public class DeskDroidApp extends Application {
     private static File cacheFolder;
     private static File home;
 
+    private static int width;
+    private static int height;
+    private static float scale;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -61,13 +65,13 @@ public class DeskDroidApp extends Application {
         // DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
         WindowManager manager = ((WindowManager) this.getSystemService(WINDOW_SERVICE));
         if (manager != null) manager.getDefaultDisplay().getRealMetrics(metrics);
-        float scale = metrics.scaledDensity;
+        scale = metrics.scaledDensity;
         if (!large) {
             scale = (float) ((double) scale / 1.5D);
         }
 
-        int width = (int) ((float) metrics.widthPixels / scale);
-        int height = (int) ((float) metrics.heightPixels / scale);
+        width = (int) ((float) metrics.widthPixels / scale);
+        height = (int) ((float) metrics.heightPixels / scale);
         if (width < height) {
             int temp = height;
             //noinspection SuspiciousNameCombination
@@ -148,5 +152,17 @@ public class DeskDroidApp extends Application {
 
     public static File getHomeFolder() {
         return home;
+    }
+
+    public static int getHeight() {
+        return height;
+    }
+
+    public static int getWidth() {
+        return width;
+    }
+
+    public static float getScale() {
+        return scale;
     }
 }

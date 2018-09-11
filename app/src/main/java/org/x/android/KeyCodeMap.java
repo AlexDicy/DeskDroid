@@ -114,7 +114,7 @@ public class KeyCodeMap {
     }
 
     public static KeyCode getKeyCode(KeyEvent keyEvent) {
-        KeyCode keyCode = (KeyCode) keyCodeMap.get(keyEvent.getKeyCode());
+        KeyCode keyCode = keyCodeMap.get(keyEvent.getKeyCode());
         if (keyCode == null) {
             return null;
         }
@@ -132,6 +132,6 @@ public class KeyCodeMap {
     }
 
     public static KeyCode getKeyCode(int i) {
-        return (KeyCode) keyCodeMap.get(i);
+        return keyCodeMap.get(i);
     }
 }

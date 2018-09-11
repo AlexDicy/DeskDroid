@@ -155,8 +155,8 @@ public abstract class Executor {
             return this;
         }
 
-        public Builder setWaitFor(boolean waitFor) {
-            executor.setWaitFor(waitFor);
+        public Builder waitFor() {
+            executor.setWaitFor(true);
             return this;
         }
 
