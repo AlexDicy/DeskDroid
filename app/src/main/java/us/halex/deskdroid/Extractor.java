@@ -1,7 +1,11 @@
 package us.halex.deskdroid;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Handler;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -9,16 +13,23 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.x.android.XServerNative;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import androidx.annotation.RawRes;
+import androidx.appcompat.app.AlertDialog;
 
 /**
  * Created by HAlexTM on 11/09/2018 12:20
@@ -76,30 +87,9 @@ public class Extractor {
         return extractZip(new ZipInputStream(inputStream), destination);
     }
 
-    public static boolean extractTar(Context context, @RawRes int rawResource, File destination) {
-        InputStream inputStream = context.getResources().openRawResource(rawResource);
-        return extractTar(inputStream, destination);
-    }
-
     public static boolean extractTar(File from, File to) {
-        try {
-            return extractTar(new FileInputStream(from), to);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public static boolean extractTar(InputStream inputStream, File to) {
-        /*try {
-            System.out.println("______________DETECTED______________");
-            System.out.println(ArchiveStreamFactory.detect(inputStream));
-            return false;
-        } catch (ArchiveException e) {
-            e.printStackTrace();
-        }*/
         Log.v("Extractor", "Extracting to " + to.getAbsolutePath());
-        try (TarArchiveInputStream is = new TarArchiveInputStream(new GzipCompressorInputStream(inputStream))) {
+        try (TarArchiveInputStream is = new TarArchiveInputStream(new GzipCompressorInputStream(new FileInputStream(from)))) {
             TarArchiveEntry entry;
             while ((entry = is.getNextTarEntry()) != null) {
                 if (entry.isDirectory()) {
@@ -122,5 +112,76 @@ public class Extractor {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public static boolean extractTarFromUrl(Context context, String from, File to, Runnable onSuccess) {
+        //https://files.halex.us/deskdroid/lib_with_fluxbox.tar.gz
+        // Step 0: open alert
+        // Step 1: Download the file in cache folder
+        // Step 2: Remember the file name and unTar it with #extractTar(File from, File to);
+        // Step 3: Remove downloaded file
+        // Step 4: close alert
+
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setTitle("Downloading file...")
+                .setMessage("Calculating file size...")
+                .setCancelable(false)
+                .show();
+
+        Handler handler = new Handler(context.getMainLooper());
+
+        new Thread(() -> {
+            try {
+                URL url = new URL(from);
+                HttpURLConnection httpConnection = (HttpURLConnection) (url.openConnection());
+                if (httpConnection.getResponseCode() != 200) {
+                    throw new IOException("Response code is not 200 but " + httpConnection.getResponseCode());
+                }
+
+                long total = httpConnection.getContentLength();
+                String t = readableFileSize(total);
+
+                BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(to));
+                BufferedInputStream inputStream = new BufferedInputStream(httpConnection.getInputStream());
+
+
+                byte[] buffer = new byte[4096];
+                long downloaded = 0;
+                int len;
+                while ((len = inputStream.read(buffer)) >= 0) {
+                    downloaded += len;
+
+                    long current = downloaded;
+                    handler.post(() -> dialog.setMessage("Progress: " + readableFileSize(current) + " / " + t));
+
+                    outputStream.write(buffer, 0, len);
+                }
+                outputStream.close();
+                inputStream.close();
+                handler.post(onSuccess);
+                return;
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                handler.post(() -> dialog.setMessage("Couldn't parse download URL, please report:\n\n" + e.getMessage()));
+            } catch (IOException e) {
+                e.printStackTrace();
+                handler.post(() -> dialog.setMessage("IOException:\n\n" + e.getMessage()));
+            }
+            handler.post(() -> {
+                dialog.setTitle("Error");
+                dialog.setCancelable(true);
+                Button close = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                close.setText(context.getString(R.string.close));
+                close.setVisibility(View.VISIBLE);
+            });
+        }, "Download & Extract file").start();
+        return false;
+    }
+
+    public static String readableFileSize(long size) {
+        if (size <= 0) return "0";
+        final String[] units = new String[]{"B", "kB", "MB", "GB", "TB"};
+        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+        return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 }

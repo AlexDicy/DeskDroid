@@ -2,11 +2,10 @@ package us.halex.deskdroid;
 
 import android.Manifest;
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import androidx.fragment.app.FragmentActivity;
-import androidx.appcompat.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -23,6 +22,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.FragmentActivity;
 import us.halex.deskdroid.execute.Executor;
 
 /**
@@ -63,7 +64,9 @@ public class DeskDroidApp extends Application {
         }
 
         System.loadLibrary("xserver");
+    }
 
+    public static void loadSystem(Context context, Runnable onSuccess) {
         XServerNative.setenv("TMP", cacheFolder.getAbsolutePath());
         XServerNative.setenv("TEMP", cacheFolder.getAbsolutePath());
         XServerNative.setenv("DISPLAY", ":0.0");
@@ -76,10 +79,10 @@ public class DeskDroidApp extends Application {
             // Get size in MB
             //long size = 100000;//getResources().openRawResourceFd(R.raw.lib_with_fluxbox).getLength();
             //String mb = new DecimalFormat("0.00").format(size / (1024 * 1024));
-            Toast.makeText(this, "Extracting core files...", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "Extracting core files...", Toast.LENGTH_LONG).show();
             // Extract zip file and start activity
             File temp = new File(appFolder, "temp");
-            if (Extractor.extractTar(this, R.raw.lib_with_fluxbox_tar_gz, temp)) {
+            if (Extractor.extractTarFromUrl(context, context.getString(R.string.download_lib_with_fluxbox), new File(temp, "lib_with_fluxbox.delete"), onSuccess)) {
                 Arrays.stream(temp.listFiles()).sorted().forEach((file) -> {
                     if (file.getName().endsWith(".tar.gz")) {
                         if (!Extractor.extractTar(file, appFolder)) {
@@ -98,20 +101,20 @@ public class DeskDroidApp extends Application {
                         .addEnv("XDG_DATA_HOME", new File(appFolder, "share").getAbsolutePath())
                         .waitFor().create().execute();
 
-                Toast.makeText(this, "Done", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "There was a problem, coulnd't extract core files completely", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "There was a problem, couldn't extract core files completely", Toast.LENGTH_LONG).show();
                 return;
             }
         }
 
 
-        int layoutSize = this.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
+        int layoutSize = context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
         boolean large = layoutSize == Configuration.SCREENLAYOUT_SIZE_LARGE || layoutSize == Configuration.SCREENLAYOUT_SIZE_XLARGE;
 
         DisplayMetrics metrics = new DisplayMetrics();
         // DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
-        WindowManager manager = ((WindowManager) this.getSystemService(WINDOW_SERVICE));
+        WindowManager manager = ((WindowManager) context.getSystemService(WINDOW_SERVICE));
         if (manager != null) manager.getDefaultDisplay().getRealMetrics(metrics);
         scale = metrics.scaledDensity;
         if (!large) {
@@ -140,7 +143,7 @@ public class DeskDroidApp extends Application {
                         "-xkbdir", (new File(appFolder, "share/X11/xkb")).getAbsolutePath(),
                         "-xkbbin", (new File(appFolder, "bin")).getAbsolutePath(),
                         "-dpi", "120", "-dumbSched", "+extension", "RANDR", "+render",
-                        "-fbdir", this.getCacheDir().getAbsolutePath()})
+                        "-fbdir", getCacheFolder().getAbsolutePath()})
                 .addEnv("XKM_DIR", new File(appFolder, "share/X11/xkb").getAbsolutePath())
                 .addEnv("PROTOCOL_TXT", new File(appFolder, "lib/xorg/protocol.txt").getAbsolutePath())
                 .create()
@@ -169,14 +172,17 @@ public class DeskDroidApp extends Application {
         } else {
             Toast.makeText(activity, "Starting the new app", Toast.LENGTH_SHORT).show();
 
-            startFluxbox();
+            loadSystem(activity, () -> {
+                startFluxbox();
 
-            new Executor.Builder()
-                    .setExecutable(app.getExecutable())
-                    .setArguments(app.getArguments())
-                    .create().execute();
+                new Executor.Builder()
+                        .setExecutable(app.getExecutable())
+                        .setArguments(app.getArguments())
+                        .create().execute();
+
+                activity.startActivity(new Intent(activity, DesktopActivity.class));
+            });
         }
-        activity.startActivity(new Intent(activity, DesktopActivity.class));
     }
 
 

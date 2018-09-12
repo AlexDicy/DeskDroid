@@ -28,4 +28,6 @@
     <string name="right">Right</string>
     <string name="slider">｜ ｜ ｜ ｜ ｜</string>
     <string name="keyboard">Keyboard</string>
+    <string name="download_lib_with_fluxbox">https://files.halex.us/deskdroid/lib_with_fluxbox.tar.gz</string>
+    <string name="close">Close</string>
 </resources>
