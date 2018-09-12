@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void createNotificationChannel(Context context) {
-        NotificationChannel channel = new NotificationChannel("default", "Default", NotificationManager.IMPORTANCE_DEFAULT);
+        NotificationChannel channel = new NotificationChannel("default", "Notifications", NotificationManager.IMPORTANCE_DEFAULT);
         channel.setDescription("info & debug notifications");
         channel.setSound(null, null);
         channel.enableVibration(false);

@@ -1,7 +1,6 @@
 package us.halex.deskdroid;
 
 import android.content.Context;
-import androidx.annotation.RawRes;
 import android.util.Log;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -18,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import androidx.annotation.RawRes;
 
 /**
  * Created by HAlexTM on 11/09/2018 12:20
