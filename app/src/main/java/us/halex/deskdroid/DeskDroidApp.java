@@ -82,7 +82,7 @@ public class DeskDroidApp extends Application {
             Toast.makeText(context, "Extracting core files...", Toast.LENGTH_LONG).show();
             // Extract zip file and start activity
             File temp = new File(appFolder, "temp");
-            if (Extractor.extractTarFromUrl(context, context.getString(R.string.download_lib_with_fluxbox), new File(temp, "lib_with_fluxbox.delete"), onSuccess)) {
+            Runnable executeLater = () -> {
                 Arrays.stream(temp.listFiles()).sorted().forEach((file) -> {
                     if (file.getName().endsWith(".tar.gz")) {
                         if (!Extractor.extractTar(file, appFolder)) {
@@ -102,13 +102,17 @@ public class DeskDroidApp extends Application {
                         .waitFor().create().execute();
 
                 Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(context, "There was a problem, couldn't extract core files completely", Toast.LENGTH_LONG).show();
-                return;
-            }
+                onSuccess.run();
+            };
+
+            Extractor.extractZipFromUrl(context, context.getString(R.string.download_lib_with_fluxbox), temp, executeLater);
+        } else {
+            setupScreen(context);
+            onSuccess.run();
         }
+    }
 
-
+    private static void setupScreen(Context context) {
         int layoutSize = context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
         boolean large = layoutSize == Configuration.SCREENLAYOUT_SIZE_LARGE || layoutSize == Configuration.SCREENLAYOUT_SIZE_XLARGE;
 

@@ -17,18 +17,16 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import androidx.annotation.RawRes;
 import androidx.appcompat.app.AlertDialog;
 
 /**
@@ -36,16 +34,7 @@ import androidx.appcompat.app.AlertDialog;
  */
 public class Extractor {
 
-    public static boolean extractZip(File source, File destination) {
-        try {
-            return extractZip(new ZipInputStream(new FileInputStream(source)), destination);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private static boolean extractZip(ZipInputStream inputStream, File destination) {
+    private static boolean extractZip(File source, File destination) throws IOException {
         if (!destination.exists() && !destination.mkdirs()) {
             Log.e("Extractor", "Couldn't create destination folder");
             return false;
@@ -53,7 +42,7 @@ public class Extractor {
 
         byte[] buffer = new byte[4096];
 
-        try {
+        try (ZipInputStream inputStream = new ZipInputStream(new FileInputStream(source))) {
             ZipEntry zipEntry = inputStream.getNextEntry();
             while (zipEntry != null) {
                 File newFile = new File(destination, zipEntry.getName());
@@ -76,15 +65,7 @@ public class Extractor {
             inputStream.closeEntry();
             inputStream.close();
             return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
         }
-    }
-
-    public static boolean extractZip(Context context, @RawRes int rawResource, File destination) {
-        InputStream inputStream = context.getResources().openRawResource(rawResource);
-        return extractZip(new ZipInputStream(inputStream), destination);
     }
 
     public static boolean extractTar(File from, File to) {
@@ -114,7 +95,7 @@ public class Extractor {
         }
     }
 
-    public static boolean extractTarFromUrl(Context context, String from, File to, Runnable onSuccess) {
+    public static void extractZipFromUrl(Context context, String from, File to, Runnable onSuccess) {
         //https://files.halex.us/deskdroid/lib_with_fluxbox.tar.gz
         // Step 0: open alert
         // Step 1: Download the file in cache folder
@@ -126,7 +107,12 @@ public class Extractor {
                 .setTitle("Downloading file...")
                 .setMessage("Calculating file size...")
                 .setCancelable(false)
+                .setNegativeButton("error", null)
+                .setPositiveButton("error", null)
                 .show();
+
+        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setVisibility(View.GONE);
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setVisibility(View.GONE);
 
         Handler handler = new Handler(context.getMainLooper());
 
@@ -141,7 +127,9 @@ public class Extractor {
                 long total = httpConnection.getContentLength();
                 String t = readableFileSize(total);
 
-                BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(to));
+                File tempFile = new File(DeskDroidApp.getCacheFolder(), "TEMP." + new Random().nextInt() + ".delete");
+
+                BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(tempFile));
                 BufferedInputStream inputStream = new BufferedInputStream(httpConnection.getInputStream());
 
 
@@ -158,8 +146,27 @@ public class Extractor {
                 }
                 outputStream.close();
                 inputStream.close();
-                handler.post(onSuccess);
-                return;
+
+                handler.post(() -> {
+                    dialog.setTitle("Extracting file...");
+                    dialog.setMessage("Please wait\n\nExtraction speed depends on your phone hardware");
+                });
+                if (extractZip(tempFile, to)) {
+                    boolean deleted = tempFile.delete();
+                    handler.post(() -> {
+                        dialog.setTitle("File extracted");
+                        dialog.setMessage("The file was successfully extracted, downloaded file " +
+                                (deleted ? "deleted to save space" : "was not deleted, an error occurred but you can still use the app"));
+                        dialog.setCancelable(true);
+                        dialog.setCanceledOnTouchOutside(true);
+                        Button ok = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                        ok.setText(context.getString(R.string.ok));
+                        ok.setVisibility(View.VISIBLE);
+                        ok.setOnClickListener(v -> dialog.dismiss());
+                        dialog.setOnDismissListener(d -> handler.post(onSuccess));
+                    });
+                    return;
+                }
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 handler.post(() -> dialog.setMessage("Couldn't parse download URL, please report:\n\n" + e.getMessage()));
@@ -175,10 +182,9 @@ public class Extractor {
                 close.setVisibility(View.VISIBLE);
             });
         }, "Download & Extract file").start();
-        return false;
     }
 
-    public static String readableFileSize(long size) {
+    private static String readableFileSize(long size) {
         if (size <= 0) return "0";
         final String[] units = new String[]{"B", "kB", "MB", "GB", "TB"};
         int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
