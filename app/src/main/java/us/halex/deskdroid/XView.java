@@ -27,7 +27,7 @@ import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
-import us.halex.deskdroid.execute.Executor;
+import us.halex.deskdroid.util.Executor;
 
 /**
  * Created by HAlexTM on 11/09/2018 09:51

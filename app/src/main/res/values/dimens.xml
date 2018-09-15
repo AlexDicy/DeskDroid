@@ -8,4 +8,5 @@
     <dimen name="appbar_padding_top">8dp</dimen>
     <dimen name="elevation_selected">6dp</dimen>
     <dimen name="elevation_normal">1dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
 </resources>

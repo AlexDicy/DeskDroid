@@ -4,16 +4,22 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
+import android.view.MenuItem;
+
 import com.google.android.material.navigation.NavigationView;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
+
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import android.view.MenuItem;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private NavigationView navigationView;
+    private int lastMenuItem = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         if (savedInstanceState == null) { // Activity has been resumed, no need to recreate the view
@@ -50,6 +56,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    public void navigateTo(@IdRes int id) {
+        //navigationView;
+        //TODO finish this.
+    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -57,22 +67,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            // Handle the camera action
-            //} else if (id == R.id.nav_gallery) {
-
-            //} else if (id == R.id.nav_slideshow) {
-
-            //} else if (id == R.id.nav_manage) {
-
-            //} else if (id == R.id.nav_share) {
-
-            //} else if (id == R.id.nav_send) {
-
+            openFragment(new HomeFragment(), id);
+        } else if (id == R.id.nav_app_list) {
+            openFragment(new AppListFragment(), id);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void openFragment(Fragment fragment, @IdRes int item) {
+        if (item != lastMenuItem) {
+            lastMenuItem = item;
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
+        }
     }
 
     private void createNotificationChannel(Context context) {

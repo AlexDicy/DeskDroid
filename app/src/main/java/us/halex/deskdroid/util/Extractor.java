@@ -1,4 +1,4 @@
-package us.halex.deskdroid;
+package us.halex.deskdroid.util;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,7 +9,6 @@ import android.widget.Button;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.x.android.XServerNative;
 
@@ -23,11 +22,12 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
-import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import androidx.appcompat.app.AlertDialog;
+import us.halex.deskdroid.DeskDroidApp;
+import us.halex.deskdroid.R;
 
 /**
  * Created by HAlexTM on 11/09/2018 12:20
@@ -70,7 +70,7 @@ public class Extractor {
 
     public static boolean extractTar(File from, File to) {
         Log.v("Extractor", "Extracting to " + to.getAbsolutePath());
-        try (TarArchiveInputStream is = new TarArchiveInputStream(new GzipCompressorInputStream(new FileInputStream(from)))) {
+        try (TarArchiveInputStream is = new TarArchiveInputStream(new FileInputStream(from))) {
             TarArchiveEntry entry;
             while ((entry = is.getNextTarEntry()) != null) {
                 if (entry.isDirectory()) {
@@ -95,14 +95,21 @@ public class Extractor {
         }
     }
 
-    public static void extractZipFromUrl(Context context, String from, File to, Runnable onSuccess) {
-        //https://files.halex.us/deskdroid/lib_with_fluxbox.tar.gz
-        // Step 0: open alert
-        // Step 1: Download the file in cache folder
-        // Step 2: Remember the file name and unTar it with #extractTar(File from, File to);
-        // Step 3: Remove downloaded file
-        // Step 4: close alert
-
+    /**
+     * Downloads a zip file from the specified url, extracts it and deletes the zip file
+     * Will open an {@link AlertDialog} informing the user about the status of the operation
+     * User canNOT close the dialog unless there was an error or the process has ended.
+     * <p>
+     * This method is Async but will still block user actions
+     *
+     * @param context    Activity context used to open the dialog
+     * @param from       url used to download the file
+     * @param to         the folder where to extract the zip archive
+     * @param identifier download identifier, used to recover interrupted downloads
+     * @param onSuccess  {@link Runnable} containing actions to run if the extraction was successful
+     *                   and the user clicked on "OK" to close the dialog. Sync to the App main thread
+     */
+    public static void extractZipFromUrl(Context context, String from, File to, String identifier, Runnable onSuccess) {
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setTitle("Downloading file...")
                 .setMessage("Calculating file size...")
@@ -120,21 +127,28 @@ public class Extractor {
             try {
                 URL url = new URL(from);
                 HttpURLConnection httpConnection = (HttpURLConnection) (url.openConnection());
-                if (httpConnection.getResponseCode() != 200) {
+
+                long downloaded = 0; // Used to recover file not downloaded successfully and keep track of the download progress
+                File tempFile = new File(DeskDroidApp.getCacheFolder(), "TEMP." + identifier + ".delete");
+                if (tempFile.exists()) {
+                    downloaded = tempFile.length();
+                    httpConnection.setRequestProperty("Range", "bytes=" + downloaded + "-");
+                }
+
+                httpConnection.connect();
+
+                if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                     throw new IOException("Response code is not 200 but " + httpConnection.getResponseCode());
                 }
 
                 long total = httpConnection.getContentLength();
                 String t = readableFileSize(total);
 
-                File tempFile = new File(DeskDroidApp.getCacheFolder(), "TEMP." + new Random().nextInt() + ".delete");
-
-                BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(tempFile));
+                BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(tempFile, downloaded > 0));
                 BufferedInputStream inputStream = new BufferedInputStream(httpConnection.getInputStream());
 
 
                 byte[] buffer = new byte[4096];
-                long downloaded = 0;
                 int len;
                 while ((len = inputStream.read(buffer)) >= 0) {
                     downloaded += len;

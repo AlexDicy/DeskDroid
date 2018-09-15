@@ -30,5 +30,8 @@
     <string name="keyboard">Keyboard</string>
     <string name="download_lib_with_fluxbox">https://files.halex.us/deskdroid/lib_with_fluxbox.zip</string>
     <string name="close">Close</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
+    <string name="app_list">App List</string>
+    <string name="open_app_list">Open app list</string>
+    <string name="no_app_installed">No app currently installed, download new apps!</string>
 </resources>

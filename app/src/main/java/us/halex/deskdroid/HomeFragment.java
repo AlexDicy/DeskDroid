@@ -3,21 +3,13 @@ package us.halex.deskdroid;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.AlertDialog;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.LinearSnapHelper;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.SnapHelper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,14 +17,26 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSnapHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
+
 /**
  * Created by HAlexTM on 07/09/2018 11:42
  */
 public class HomeFragment extends Fragment {
     private Menu menu;
+    // Installed app list
     private RecyclerView appsView;
     private AppsAdapter appsAdapter;
     private LinearLayoutManager layoutManager;
+    // Selected app
     private CardView currentApp;
     private int selectedApp = -1;
 
@@ -89,7 +93,6 @@ public class HomeFragment extends Fragment {
                     int position = layoutManager.getPosition(view);
                     if (position != selectedApp && appsView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
                         onAppSelected(position, view);
-                        selectedApp = position;
                     }
                 }
                 return view;
@@ -118,7 +121,8 @@ public class HomeFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.main, menu);
         this.menu = menu;
-        menu.findItem(R.id.action_control).setOnMenuItemClickListener(item -> {
+        MenuItem control = menu.findItem(R.id.action_control);
+        control.setOnMenuItemClickListener(item -> {
             if (currentApp != null && selectedApp > -1) {
                 App app = appsAdapter.getAppByPosition(selectedApp);
                 if (app != null) {
@@ -176,14 +180,31 @@ public class HomeFragment extends Fragment {
     }
 
     private void setMenuText() {
-        if (menu != null && currentApp != null) {
+        if (menu != null) {
             MenuItem action = menu.findItem(R.id.action_control);
-            App app = appsAdapter.getAppByPosition(selectedApp);
-            if (app != null) {
-                boolean running = DeskDroidApp.isRunning(app);
-                action.setTitle(running ? R.string.action_stop : R.string.action_start).setVisible(true);
-            } else {
-                action.setTitle(R.string.there_was_error).setVisible(true);
+            if (currentApp != null) {
+                action.setVisible(true);
+                App app = appsAdapter.getAppByPosition(selectedApp);
+                if (app != null) {
+                    boolean running = DeskDroidApp.isRunning(app);
+                    action.setTitle(running ? R.string.action_stop : R.string.action_start);
+                } else {
+                    action.setTitle(R.string.there_was_error);
+                }
+            } else if (appsAdapter.getItemCount() == 0) {
+                action.setVisible(false);
+                View view = getView();
+                if (view != null) {
+                    TextView title = view.findViewById(R.id.title_text);
+                    title.setText(getString(R.string.no_app_installed)); //TODO change this.
+                    title.setPaddingRelative(title.getPaddingStart(), 256, title.getPaddingEnd(), title.getPaddingBottom());
+                    Button button = view.findViewById(R.id.app_list_button);
+                    button.setVisibility(View.VISIBLE);
+                    button.setOnClickListener(v -> {
+                        MainActivity activity = (MainActivity) getActivity();
+                        activity.navigateTo(R.id.nav_app_list);
+                    });
+                }
             }
         }
     }
@@ -193,11 +214,16 @@ public class HomeFragment extends Fragment {
         List<App> apps = new ArrayList<>();
 
         private AppsAdapter() {
-            apps.add(new App(getString(R.string.intellij), getResources().getDrawable(R.drawable.ic_intellij_logo, null), getResources().getDrawable(R.drawable.ic_intellij_logo_text, null)));
+            /*apps.add(new App(getString(R.string.intellij), getResources().getDrawable(R.drawable.ic_intellij_logo, null), getResources().getDrawable(R.drawable.ic_intellij_logo_text, null)));
             apps.add(new App(getString(R.string.notepad), getResources().getDrawable(R.drawable.ic_notepad_logo, null), getResources().getDrawable(R.drawable.ic_intellij_logo_text, null)));
-            apps.add(new App(getString(R.string.notepadpp), getResources().getDrawable(R.drawable.ic_notepadpp_logo, null), getResources().getDrawable(R.drawable.ic_intellij_logo_text, null)));
+            apps.add(new App(
+                    getString(R.string.notepadpp),
+                    getResources().getDrawable(R.drawable.ic_notepadpp_logo, null),
+                    getResources().getDrawable(R.drawable.ic_intellij_logo_text, null),
+                    "npp",
+                    "notepad"));
             apps.add(new App(getString(R.string.firefox), getResources().getDrawable(R.drawable.ic_firefox_logo, null), getResources().getDrawable(R.drawable.ic_intellij_logo_text, null)));
-        }
+        */}
 
         private App getAppByPosition(int pos) {
             return apps.size() > pos && pos > -1 ? apps.get(pos) : null;

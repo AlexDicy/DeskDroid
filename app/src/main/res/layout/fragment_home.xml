@@ -13,7 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
         android:fontFamily="@font/nunito_extralight"
         android:text="@string/your_apps"
         android:textAlignment="center"
@@ -26,13 +28,30 @@
         android:id="@+id/apps"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/title_text"
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title_text"
+        app:layout_constraintTop_toBottomOf="@id/title_text"
         tools:listitem="@layout/card_app" />
+
+    <Button
+        android:id="@+id/app_list_button"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:background="#d5419cd4"
+        android:fontFamily="@font/nunito_bold"
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp"
+        android:text="@string/open_app_list"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_text" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

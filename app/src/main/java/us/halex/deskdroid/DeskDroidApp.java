@@ -24,7 +24,8 @@ import java.util.Map;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
-import us.halex.deskdroid.execute.Executor;
+import us.halex.deskdroid.util.Executor;
+import us.halex.deskdroid.util.Extractor;
 
 /**
  * Created by HAlexTM on 10/09/2018 12:13
@@ -83,15 +84,19 @@ public class DeskDroidApp extends Application {
             // Extract zip file and start activity
             File temp = new File(appFolder, "temp");
             Runnable executeLater = () -> {
-                Arrays.stream(temp.listFiles()).sorted().forEach((file) -> {
-                    if (file.getName().endsWith(".tar.gz")) {
-                        if (!Extractor.extractTar(file, appFolder)) {
-                            Toast.makeText(instance, "Error extracting file " + file.getName(), Toast.LENGTH_LONG).show();
+                File[] list = temp.listFiles();
+                if (list != null) {
+                    Arrays.stream(list).sorted().forEach((file) -> {
+                        if (file.getName().endsWith(".tar")) {
+                            Toast.makeText(context, "Extracting file: " + file.getName(), Toast.LENGTH_SHORT).show();
+                            if (!Extractor.extractTar(file, appFolder)) {
+                                Toast.makeText(context, "Error extracting file " + file.getName(), Toast.LENGTH_LONG).show();
+                            }
                         }
-                    }
-                    //noinspection ResultOfMethodCallIgnored
-                    file.delete();
-                });
+                        //noinspection ResultOfMethodCallIgnored
+                        file.delete();
+                    });
+                }
                 //noinspection ResultOfMethodCallIgnored
                 temp.delete();
                 new Executor.Builder()
@@ -105,7 +110,7 @@ public class DeskDroidApp extends Application {
                 onSuccess.run();
             };
 
-            Extractor.extractZipFromUrl(context, context.getString(R.string.download_lib_with_fluxbox), temp, executeLater);
+            Extractor.extractZipFromUrl(context, context.getString(R.string.download_lib_with_fluxbox), temp, "lib_with_fluxbox", executeLater);
         } else {
             setupScreen(context);
             onSuccess.run();
@@ -182,6 +187,7 @@ public class DeskDroidApp extends Application {
                 new Executor.Builder()
                         .setExecutable(app.getExecutable())
                         .setArguments(app.getArguments())
+                        .setCustomFolder(app.getFolder())
                         .create().execute();
 
                 activity.startActivity(new Intent(activity, DesktopActivity.class));

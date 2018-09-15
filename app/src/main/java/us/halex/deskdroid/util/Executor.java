@@ -1,4 +1,4 @@
-package us.halex.deskdroid.execute;
+package us.halex.deskdroid.util;
 
 import android.util.Log;
 
@@ -21,6 +21,7 @@ public abstract class Executor {
     private Map<String, String> env = new HashMap<>();
     private String executable;
     private String[] arguments;
+    private File customFolder;
     private boolean waitFor = false;
     private boolean runShell = false;
 
@@ -56,6 +57,10 @@ public abstract class Executor {
         this.arguments = arguments;
     }
 
+    public void setCustomFolder(File customFolder) {
+        this.customFolder = customFolder;
+    }
+
     public void setRunShell(boolean runShell) {
         this.runShell = runShell;
     }
@@ -67,7 +72,7 @@ public abstract class Executor {
     public void execute() {
         run();
 
-        File bin = new File(DeskDroidApp.getAppFolder(), "bin");
+        File bin = customFolder != null ? customFolder : new File(DeskDroidApp.getAppFolder(), "bin");
         env.put("DISPLAY", ":0.0");
         if (XServerNative.getenv("PATH") != null) {
             env.put("PATH", XServerNative.getenv("PATH") + ":" + bin.getAbsolutePath());
@@ -147,6 +152,11 @@ public abstract class Executor {
 
         public Builder setArguments(String[] arguments) {
             executor.setArguments(arguments);
+            return this;
+        }
+
+        public Builder setCustomFolder(File folderName) {
+            executor.setCustomFolder(folderName);
             return this;
         }
 

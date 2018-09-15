@@ -3,11 +3,12 @@ package us.halex.deskdroid;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+
+import java.io.File;
+
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-
-import java.io.File;
 
 /**
  * Created by HAlexTM on 08/09/2018 09:58
@@ -36,10 +37,18 @@ public class App {
         this.textLogo = textLogo;
     }
 
-    public App(String name, Drawable logo, Drawable textLogo, String folder, String executable, String[] arguments) {
+    public App(String name, Drawable logo, Drawable textLogo, String folder) {
         this(name, logo, textLogo);
         this.folder = new File(DeskDroidApp.getAppFolder(), "app/" + folder);
+    }
+
+    public App(String name, Drawable logo, Drawable textLogo, String folder, String executable) {
+        this(name, logo, textLogo, folder);
         this.executable = executable;
+    }
+
+    public App(String name, Drawable logo, Drawable textLogo, String folder, String executable, String[] arguments) {
+        this(name, logo, textLogo, folder, executable);
         this.arguments = arguments;
     }
 
