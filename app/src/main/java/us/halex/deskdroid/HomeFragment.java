@@ -197,7 +197,7 @@ public class HomeFragment extends Fragment {
                 if (view != null) {
                     TextView title = view.findViewById(R.id.title_text);
                     title.setText(getString(R.string.no_app_installed)); //TODO change this.
-                    title.setPaddingRelative(title.getPaddingStart(), 256, title.getPaddingEnd(), title.getPaddingBottom());
+                    title.setPaddingRelative(title.getPaddingStart(), 512, title.getPaddingEnd(), title.getPaddingBottom());
                     Button button = view.findViewById(R.id.app_list_button);
                     button.setVisibility(View.VISIBLE);
                     button.setOnClickListener(v -> {

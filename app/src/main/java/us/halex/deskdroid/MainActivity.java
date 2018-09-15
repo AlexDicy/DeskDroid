@@ -57,8 +57,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void navigateTo(@IdRes int id) {
-        //navigationView;
-        //TODO finish this.
+        MenuItem item = navigationView.getMenu().findItem(id);
+        navigationView.setCheckedItem(id);
+        onNavigationItemSelected(item);
     }
 
     @Override
@@ -67,9 +68,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            openFragment(new HomeFragment(), id);
+            openFragment(new HomeFragment(), id, true);
         } else if (id == R.id.nav_app_list) {
-            openFragment(new AppListFragment(), id);
+            openFragment(new AppListFragment(), id, false);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -77,10 +78,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    private void openFragment(Fragment fragment, @IdRes int item) {
+    private void openFragment(Fragment fragment, @IdRes int item, boolean replace) {
         if (item != lastMenuItem) {
             lastMenuItem = item;
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
+            if (replace) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
+            } else {
+                getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).addToBackStack("default").commit();
+            }
         }
     }
 
