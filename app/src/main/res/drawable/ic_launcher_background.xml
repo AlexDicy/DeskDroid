@@ -6,11 +6,11 @@
         android:viewportHeight="211.66667">
     <path android:fillType="evenOdd" android:pathData="M105.83,0L105.84,0A105.83,105.83 0,0 1,211.67 105.83L211.67,105.84A105.83,105.83 0,0 1,105.84 211.67L105.83,211.67A105.83,105.83 0,0 1,-0 105.84L-0,105.83A105.83,105.83 0,0 1,105.83 0z">
         <aapt:attr name="android:fillColor">
-            <gradient android:centerX="105.83089"
-                android:centerY="105.83782"
-                android:gradientRadius="105.83659" android:type="radial">
-                <item android:color="#FF2A7FFF" android:offset="0"/>
-                <item android:color="#FF2A68FF" android:offset="1"/>
+            <gradient android:endX="198.7" android:endY="144.467"
+                android:startX="0" android:startY="27.777" android:type="linear">
+                <item android:color="#FF2A55FF" android:offset="0"/>
+                <item android:color="#FF2AA3FF" android:offset="0.45424"/>
+                <item android:color="#FF2A55FF" android:offset="1"/>
             </gradient>
         </aapt:attr>
     </path>
