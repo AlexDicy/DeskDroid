@@ -1,36 +1,36 @@
 <resources>
-    <string name="app_name">DeskDroid</string>
+    <string name="app_name" translatable="false">DeskDroid</string>
     <string name="navigation_drawer_open">Open navigation menu</string>
     <string name="navigation_drawer_close">Close navigation menu</string>
-    <string name="nav_header_title">DeskDroid</string>
-    <string name="nav_header_subtitle">support@halex.us</string>
-    <string name="nav_header_desc">Navigation header</string>
+    <string name="nav_header_title" translatable="false">DeskDroid</string>
+    <string name="nav_header_subtitle" translatable="false">support@halex.us</string>
+    <string name="nav_header_desc" translatable="false">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="action_data_settings">Show data usage</string>
     <string name="action_start">Start</string>
     <string name="action_stop">Stop</string>
-    <string name="home">Home</string>
-    <string name="title_activity_temp_tabbed">TempTabbed</string>
-    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="home" translatable="false">Home</string>
+    <string name="title_activity_temp_tabbed" translatable="false">TempTabbed</string>
+    <string name="section_format" translatable="false">Hello World from section: %1$d</string>
     <string name="card_app_image">App image</string>
     <string name="card_app_name">App name</string>
 
-    <string name="intellij">IntelliJ</string>
+    <string name="intellij" translatable="false">IntelliJ</string>
     <string name="your_apps">Your apps</string>
-    <string name="apps_position">apps_position</string>
-    <string name="notepad">Notepad</string>
-    <string name="notepadpp">Notepad++</string>
-    <string name="firefox">Firefox</string>
-    <string name="apps_info">apps_info</string>
-    <string name="last_app_name">last_app_name</string>
+    <string name="apps_position" translatable="false">apps_position</string>
+    <string name="notepad" translatable="false">Notepad</string>
+    <string name="notepadpp" translatable="false">Notepad++</string>
+    <string name="firefox" translatable="false">Firefox</string>
+    <string name="apps_info" translatable="false">apps_info</string>
+    <string name="last_app_name" translatable="false">last_app_name</string>
     <string name="there_was_error">There was an error</string>
-    <string name="left">Left</string>
-    <string name="right">Right</string>
-    <string name="slider">｜ ｜ ｜ ｜ ｜</string>
+    <string name="left" translatable="false">Left</string>
+    <string name="right" translatable="false">Right</string>
+    <string name="slider" translatable="false">｜ ｜ ｜ ｜ ｜</string>
     <string name="keyboard">Keyboard</string>
-    <string name="download_lib_with_fluxbox">https://files.halex.us/deskdroid/lib_with_fluxbox.zip</string>
+    <string name="download_lib_with_fluxbox" translatable="false">https://files.halex.us/deskdroid/lib_with_fluxbox.zip</string>
     <string name="close">Close</string>
-    <string name="ok">OK</string>
+    <string name="ok" translatable="false">OK</string>
     <string name="app_list">App List</string>
     <string name="open_app_list">Open app list</string>
     <string name="no_app_installed">No app currently installed, download new apps!</string>

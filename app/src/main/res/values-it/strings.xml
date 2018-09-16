@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="navigation_drawer_open">Apri il menu di navigazione</string>
+    <string name="navigation_drawer_close">Chiudi il menu di navigazione</string>
+    <string name="action_settings">Impostazioni</string>
+    <string name="action_data_settings">Mostra l\'utilizzo dei dati</string>
+    <string name="action_start">Avvia</string>
+    <string name="action_stop">Stop</string>
+    <string name="card_app_image">Immagine dell\'app</string>
+    <string name="card_app_name">Nome dell\'app</string>
+    <string name="your_apps">Le tue app</string>
+    <string name="there_was_error">C\'è stato un errore</string>
+    <string name="keyboard">Tastiera</string>
+    <string name="close">Chiudi</string>
+    <string name="app_list">Lista delle app</string>
+    <string name="open_app_list">Apri la lista delle app</string>
+    <string name="no_app_installed">Nessuna app installata, scarica nuove app!</string>
+</resources>

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -19,6 +20,7 @@ import androidx.fragment.app.Fragment;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private NavigationView navigationView;
+    @IdRes
     private int lastMenuItem = -1;
 
     @Override
@@ -37,6 +39,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        FirebaseAnalytics.getInstance(this);
+
+
+        getSupportFragmentManager().addOnBackStackChangedListener(() -> {
+            Fragment current = getSupportFragmentManager().findFragmentById(R.id.container);
+            if (current instanceof HomeFragment) {
+                navigationView.setCheckedItem(R.id.nav_home);
+                lastMenuItem = R.id.nav_home;
+            }
+        });
+
 
         if (savedInstanceState == null) { // Activity has been resumed, no need to recreate the view
             navigationView.setCheckedItem(R.id.nav_home);
@@ -66,11 +80,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        if (id == lastMenuItem) {
+            return true;
+        }
+        lastMenuItem = id;
 
         if (id == R.id.nav_home) {
-            openFragment(new HomeFragment(), id, true);
+            openFragment(new HomeFragment(), true);
         } else if (id == R.id.nav_app_list) {
-            openFragment(new AppListFragment(), id, false);
+            openFragment(new AppListFragment(), false);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -78,14 +96,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    private void openFragment(Fragment fragment, @IdRes int item, boolean replace) {
-        if (item != lastMenuItem) {
-            lastMenuItem = item;
-            if (replace) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
-            } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).addToBackStack("default").commit();
-            }
+    private void openFragment(Fragment fragment, boolean replace) {
+        if (replace) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
+        } else {
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).addToBackStack(null).commit();
         }
     }
 

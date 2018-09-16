@@ -5,6 +5,8 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
@@ -17,6 +19,8 @@ public class App {
     private String name; // Should be unique because it's used as key
     private Drawable logo;
     private Drawable textLogo;
+    // App requirements
+    private List<String> dependencies = new ArrayList<>();
     // Execution info
     private File folder; // .../app/intellij/
     private String executable;
@@ -62,6 +66,14 @@ public class App {
 
     public Drawable getTextLogo() {
         return textLogo;
+    }
+
+    public List<String> getDependencies() {
+        return dependencies;
+    }
+
+    public void setDependencies(List<String> dependencies) {
+        this.dependencies = dependencies;
     }
 
     public File getFolder() {

@@ -196,13 +196,13 @@ public class HomeFragment extends Fragment {
                 View view = getView();
                 if (view != null) {
                     TextView title = view.findViewById(R.id.title_text);
-                    title.setText(getString(R.string.no_app_installed)); //TODO change this.
+                    title.setText(getString(R.string.no_app_installed));
                     title.setPaddingRelative(title.getPaddingStart(), 512, title.getPaddingEnd(), title.getPaddingBottom());
                     Button button = view.findViewById(R.id.app_list_button);
                     button.setVisibility(View.VISIBLE);
                     button.setOnClickListener(v -> {
                         MainActivity activity = (MainActivity) getActivity();
-                        activity.navigateTo(R.id.nav_app_list);
+                        if (activity != null) activity.navigateTo(R.id.nav_app_list);
                     });
                 }
             }
